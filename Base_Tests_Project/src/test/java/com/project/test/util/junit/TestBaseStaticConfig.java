@@ -4,10 +4,6 @@ import com.project.test.util.TestMode;
 import com.project.test.constants.ServerURL;
 import com.project.test.util.FilePathUtils;
 import com.project.test.util.OperationSystem;
-import com.project.testrail.datacontainers.TestRunInfo;
-import com.project.testrail.entities.TestInstance;
-import com.project.testrail.entities.TestRun;
-import com.project.testrail.entities.TestRunCreator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +49,6 @@ public class TestBaseStaticConfig {
     protected static boolean attachment = false;
     protected static boolean thumbnail = false;
     
-    protected static List<TestInstance> testInstances;
     protected static int testRunId;
     protected int testCaseId;
     
@@ -100,7 +95,6 @@ public class TestBaseStaticConfig {
         logger.info("Retry set to: " + retry);
         logger.info("TestRail set to: " + testrail);
         logger.info("Documentation set to: " + documentation);
-        logger.info("TestRail Project set to: " + testRailProject);
         
         MDC.remove("methodName");
     }
@@ -274,11 +268,6 @@ public class TestBaseStaticConfig {
         return intValue;
     }
     
-    public static void createTestRun() {
-        createTestRun(ServerURL.VERSION + (suiteName!=null?" " + suiteName:"") + " " + new LocalDateTime());
-    }
-    
-    
     public static TestMode getMode() {
         return mode;
     }
@@ -335,10 +324,6 @@ public class TestBaseStaticConfig {
         return thumbnail;
     }
 
-    public static List<TestInstance> getTestInstances() {
-        return testInstances;
-    }
-
     public static boolean isCheckForLongSteps() {
         return checkForLongSteps;
     }
@@ -354,5 +339,4 @@ public class TestBaseStaticConfig {
     public void setTestCaseId(int testCaseId) {
         this.testCaseId = testCaseId;
     }
-
 }
