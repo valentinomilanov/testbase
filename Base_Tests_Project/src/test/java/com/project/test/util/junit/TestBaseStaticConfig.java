@@ -1,33 +1,8 @@
 package com.project.test.util.junit;
 
-import com.project.test.util.TestMode;
-import com.project.test.constants.ServerURL;
-import com.project.test.util.FilePathUtils;
 import com.project.test.util.OperationSystem;
-import com.project.testrail.datacontainers.TestRunInfo;
-import com.project.testrail.entities.TestInstance;
-import com.project.testrail.entities.TestRun;
-import com.project.testrail.entities.TestRunCreator;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.InvalidParameterException;
-import java.util.List;
-import java.util.Properties;
-
-import javax.naming.ConfigurationException;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import com.project.test.util.TestMode;
+import com.project.testrail.enums.TestRailProjects;
 
 public class TestBaseStaticConfig {
 	
@@ -53,6 +28,8 @@ public class TestBaseStaticConfig {
     protected static boolean attachment = false;
     protected static boolean thumbnail = false;
     
+    protected static final TestRailProjects testRailProject;
+    protected static TestRailService testRailService;
     protected static List<TestInstance> testInstances;
     protected static int testRunId;
     protected int testCaseId;
@@ -93,7 +70,40 @@ public class TestBaseStaticConfig {
         } else {
             ignoreFailures = true;
         }
+        testRailProject = getTestRailProjectProperty(System.getProperty("testrailproject"));
         
+        if (testrail) {
+            testRailService = new TestRailService();
+            readFromPropoertiesFile("src/test/resources/testrail.properties");
+            TestRunInfo.setAssignedToId(4);
+            
+            TestRunInfo.setProject(getTestRailService().getProject(testRailProject.getId()));
+            
+            logger.trace("nightly");
+            boolean nightly = getBooleanProperty("nightlyRun");            
+            if (nightly) {
+                setUpTestRailId();
+            } else {
+                try {
+                    logger.trace("Read test run ID");
+                    testRunId = Integer.parseInt(System.getProperty("testRunId"));
+                    logger.trace("test run id: " + testRunId);
+                    
+                    TestRunInfo.setTestRun(testRailService.getTestRun(testRunId));
+                    if (preparedRun) {
+                        testInstances = testRailService.getTests(testRunId);
+                    }
+                } catch (Exception e) {
+                    logger.trace("Test run id failed");
+                    TestBaseStaticConfig.createTestRun();
+                }
+            }
+            
+            attachment = getBooleanProperty("attachment");
+            if (attachment) {
+                thumbnail = getBooleanProperty("thumbnail");
+            }
+        }
         logger.info("Mode set to: " + mode);
         logger.info("Browser set to: " + browser);
         logger.info("Server set: " + server);
@@ -274,10 +284,128 @@ public class TestBaseStaticConfig {
         return intValue;
     }
     
+    private static TestRailProjects getTestRailProjectProperty(String testRailProject) {
+        if(testRailProject == null || testRailProject.isEmpty()){
+            switch (os) {
+                case WINDOWS:
+                    logger.info("TestRail Project was null. Setting TestRail Project to \"SureClinical - Web\"");
+                    return TestRailProjects.SC_WEB;
+                case ANDROID:
+                    logger.info("TestRail Project was null. Setting TestRail Project to \"SureClinical - Mobile\"");
+                    return TestRailProjects.SC_MOBILE;
+                default:
+                    throw new Error("No default project for this os: " + os);
+            }
+        }
+        TestRailProjects project = TestRailProjects.getById(Integer.parseInt(testRailProject));
+        logger.info("TestRail Project value found!. Setting TestRail Project to: " + project);
+        return project;
+    }
+    
+    private static void setUpTestRailId() {
+        TestRailService testRailService = TestBaseStaticConfig.getTestRailService();
+        List<TestRun> testRuns = testRailService.getTestRuns(TestBaseStaticConfig.getTestRailProject().getId());
+        
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy"); 
+        String expectedTestRunName = "Nightly Test Run "+ dtf.print(now) + " - " + dtf.print(now.plusDays(1));
+        logger.trace("expectedTestRunName: " + expectedTestRunName);
+        
+        boolean testRunFound = false;
+        
+        for (TestRun testRun: testRuns) {
+            if (testRun.getName().equals(expectedTestRunName)) {
+                TestBaseStaticConfig.setTestRunId(testRun.getId());
+                TestRunInfo.setTestRun(testRun);
+                testRunFound = true;
+                break;
+            }
+        }
+        
+        if (!testRunFound) {
+            TestBaseStaticConfig.createTestRun(expectedTestRunName);
+        }
+    }
+    
     public static void createTestRun() {
         createTestRun(ServerURL.VERSION + (suiteName!=null?" " + suiteName:"") + " " + new LocalDateTime());
     }
     
+    public static void createTestRun(String name) {
+        
+        TestRunCreator testRunCreator = new TestRunCreator();
+        testRunCreator.setName(name);
+        testRunCreator.setIncludeAll(false);
+        
+        //set milestone for the test run
+        String milestoneIdProperty = System.getProperty("milestoneId");
+        if (milestoneIdProperty != null && !milestoneIdProperty.isEmpty()){
+            logger.debug("milestoneId: " + milestoneIdProperty);
+            try {
+                Integer milestoneId = Integer.parseInt(milestoneIdProperty);
+                testRunCreator.setMilestoneId(milestoneId);
+            } catch (NumberFormatException e) {
+                logger.debug("milestoneId was not a valid integer, continue without setting the milestone");
+                e.printStackTrace();
+            }
+        } else {
+            logger.debug("milestoneId not found, continue test run without setting the milestone");
+        }
+        
+        
+        
+        TestRun testRun = getTestRailService().addTestRun(testRailProject.getId(), testRunCreator);
+        TestRunInfo.setTestRun(testRun);
+        logger.trace("test run id: " + testRun.getId());
+        TestBaseStaticConfig.setTestRunId(testRun.getId());
+        
+    }
+    
+    /**
+     *
+     * Read data from properties file.
+     * Set up TestRailService to be able to communicate with desired TestRail instance
+     *
+     * @param propertiesFile - file which holds the credentials and URL to the TestRail instance
+     */
+    protected static void readFromPropoertiesFile(String propertiesFile){
+        Properties properties = new Properties();
+        InputStream resource = null;
+        try {
+            try {
+                resource = new FileInputStream(new File(propertiesFile));
+                properties.load(resource);
+            } catch (IOException e) {
+                throw new InvalidParameterException("Properties file is not valid.");
+            }
+            
+            //If clientId isn't in there or it's blank, look for api_endpoint. If it's there and not null, that means we have a "local" TestRail Instance.
+            // Set the service's apiEndpoint accordingly for the remainder of the test.
+            //If both properties are defined, api_endpoint will be ignored
+            String clientId = properties.getProperty("clientId");
+            if (null == clientId || clientId.isEmpty()) {
+                String apiEndpoint = properties.getProperty("api_endpoint");
+                try {
+                    getTestRailService().setApiEndpoint(new URL(apiEndpoint));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //If clientID wasn't null after all, set it, and use the "hosted" TestRail Instance code path
+                getTestRailService().setClientId(clientId);
+            }
+            //Set up all the credentials
+            getTestRailService().setUsername(properties.getProperty("username"));
+            getTestRailService().setPassword(properties.getProperty("password"));
+            TestRunInfo.setAssignedToId(Integer.parseInt(properties.getProperty("assignedToId")));
+        } finally {
+            try {
+                resource.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     
     public static TestMode getMode() {
         return mode;
@@ -303,12 +431,24 @@ public class TestBaseStaticConfig {
         return testrail;
     }
     
+    public static TestRailService getTestRailService() {
+        return testRailService;
+    }
+    
+    public static TestRailProjects getTestRailProject() {
+        return testRailProject;
+    }
+    
     public static int getTestRunId() {
         return testRunId;
     }
     
     public static void setTestRunId(int testRunId) {
         TestBaseStaticConfig.testRunId = testRunId;
+    }
+    
+    public static boolean isDocumentation() {
+        return documentation;
     }
     
     public static String getGridHost() {
@@ -322,6 +462,10 @@ public class TestBaseStaticConfig {
     public static boolean isPassedSkip() {
         return skipPassedTests;
     }
+
+    public static boolean isTestsWithoutTestrailSkip() {
+        return skipNonTestrailTests;
+    }
     
     public static boolean isIgnoreFailures() {
         return ignoreFailures;
@@ -333,6 +477,10 @@ public class TestBaseStaticConfig {
     
     public static boolean isThumbnail() {
         return thumbnail;
+    }
+
+    public static boolean isPreparedrun() {
+        return preparedRun;
     }
 
     public static List<TestInstance> getTestInstances() {
