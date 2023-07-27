@@ -1,4 +1,4 @@
-package com.project.test.constants;
+package com.project.test.enums;
 
 public enum TypeOfServer {
 	INSTANCE_1,

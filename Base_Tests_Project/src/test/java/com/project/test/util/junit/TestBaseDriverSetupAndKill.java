@@ -1,6 +1,6 @@
 package com.project.test.util.junit;
 
-import com.project.test.constants.TypeOfServer;
+import com.project.test.enums.TypeOfServer;
 import com.project.test.pageobjects.base.BaseInformations;
 import com.project.test.util.junit.mobile.Devices;
 
