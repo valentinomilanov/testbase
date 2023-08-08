@@ -1,8 +1,13 @@
 package com.project.test.api;
 
+/**
+ * 
+ * @author Valentino Milanov
+ *
+ */
 public class Params {
 	
-	//TODO fix this class to your needs
+	//FIXME fix this class to your needs
 	 private String archiveId;
 	    private String model;
 	    

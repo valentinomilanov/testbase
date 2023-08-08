@@ -5,6 +5,12 @@ import com.project.test.util.OperationSystem;
 
 import org.openqa.selenium.WebDriver;
 
+/**
+ * 
+ * @author Valentino Milanov
+ * 
+ * Class for getting all base information that are needed on the project like Driver, Operation System Type of Server
+ */
 public class BaseInformations {
 
 	final WebDriver driver;

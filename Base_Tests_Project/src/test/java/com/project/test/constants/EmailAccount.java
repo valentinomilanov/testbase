@@ -1,11 +1,18 @@
 package com.project.test.constants;
 
+/**
+ * 
+ * @author Valentino Milanov
+ *
+ * enum with information about email accounts used for the project
+ */
 public enum EmailAccount {
 
-	//TODO add all information for your email accounts! 
+	//FIXME add all information for your email accounts! 
 	
 	EMAIL_USER_1("[add email of User 1 withott host (e.g. without @gmail.com)]", "[add password for that email account]"),
-    EMAIL_USER_2("[add email of User 2 withott host (e.g. without @gmail.com)]", "[add password for that email account]"),
+	//Exaple of email account:
+    EMAIL_USER_2("tester1.wedoqa.co", ".zl#P~K4vuw5"),
     ;
     
     public static final String EMAIL_HOST = "add host extension, e.g. @gmail.com";

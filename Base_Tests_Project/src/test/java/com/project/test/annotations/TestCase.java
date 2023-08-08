@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
-* Created by wedoqa
+* Created by Valentino Milanov
 *
 * id - Test Case id from TestRail (e.g. C23)
 * name - Test Case name from TestRail
 *
-* Mark every test case implementation with this annotation to provide information about TestRail TestCase
+* Mark every test case implementation with this annotation to provide information about TestCase
 */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD) //can use in method only.

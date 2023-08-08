@@ -1,7 +1,12 @@
 package com.project.test.api;
 
+/**
+ * 
+ * @author Valentino Milanov
+ *
+ */
 public enum Modules {
-//TODO add your own modules, here are a couple exaples from some other projects
+//FIXME add your own modules, here are a couple exaples from some other projects
 	REVIEW_FORM_AND_SIGN("REVIEW_FORM_AND_SIGN"),
     SIGN_DOCUMENT("SIGN_DOC"),
     SIGN_FORM("SIGN_FORM"),

@@ -1,5 +1,11 @@
 package com.project.test.api;
 
+/**
+ * 
+ * @author Valentino Milanov
+ *
+ * Payload data that that is sent in a request to the server
+ */
 public class Payload {
 	private Params params;
 

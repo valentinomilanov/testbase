@@ -154,7 +154,7 @@ public class TestBase extends TestBaseRules {
     }
     
 //Email Handeling 
-    //TODO use this only if you have to use emails
+    //FIXME use this only if you have to use emails
     protected void openEmails(EmailAccount account, String expectedSubject) {
         openEmails(account, expectedSubject, 1);
     }
@@ -233,12 +233,12 @@ public class TestBase extends TestBaseRules {
         }
         if (BasePageObjectWithRoot.isPresent(BasePageObject.class, baseInformations)) {
             try {
-                //TODO add logout method
+                //FIXME add logout method
             } catch (Throwable t) {
                 if (DEBUG_LOGGING) {
                     logger.trace("not present 1");
                 }
-                //TODO Add methods to check if some steps needs to be done before login (e.g. 'open offside panel', 'close tooltip', etc.)
+                //FIXME Add methods to check if some steps needs to be done before login (e.g. 'open offside panel', 'close tooltip', etc.)
             } 
         } else {
             logger.error("It is not logged in");

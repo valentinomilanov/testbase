@@ -9,9 +9,15 @@ import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory;
 import com.project.test.pageobjects.base.BaseInformations;
 import com.project.test.pageobjects.base.BasePageObjectWithRoot;
 
+/**
+ * 
+ * @author Valentino Milanov
+ *
+ * Base page object for all pop-up dialogs on the web application
+ */
 public class BaseDialog extends BasePageObjectWithRoot {
 
-	//TODO fix all the locators for the Base Dialog web element and root
+	//FIXME fix all the locators for the Base Dialog web element and root
 	public static final By DIALOG_ROOT = By.cssSelector("md-dialog");
 	
     @FindBy(css = "button[aria-label='Close']")

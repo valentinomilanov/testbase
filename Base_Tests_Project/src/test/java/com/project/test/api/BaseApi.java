@@ -32,6 +32,13 @@ import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author Valentino Milanov
+ * 
+ * Base class with all methods and enums for executing API calls
+ *
+ */
 public class BaseApi {
 
 public static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
@@ -52,10 +59,27 @@ public static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
         }
     }).create();
     
+    /**
+     * Method for executing API call without expeted COde
+     * @param method
+     * @param apiCall
+     * @param entity
+     * @param haeders
+     * @return
+     */
     protected ClosedResponse executeCall(Method method, String apiCall, HttpEntity entity, List<Header> haeders) {
         return executeCall(method, apiCall, entity, haeders, method.getExpectedReturnValue());
     }
     
+    /**
+     * Method for executing API call
+     * @param method
+     * @param apiCall
+     * @param entity
+     * @param headers
+     * @param expectedCode
+     * @return
+     */
     protected ClosedResponse executeCall(Method method, String apiCall, HttpEntity entity, List<Header> headers, int expectedCode) {
         HttpRequestBase request = getRequest(method);
         request.setURI(URI.create(apiCall));
@@ -94,6 +118,12 @@ public static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
         
     }
     
+    /**
+     * 
+     * @author Valentino Milanov
+     * 
+     * Handling received response from API call
+     */
     public static class ClosedResponse {
         
         private HttpResponse response;
@@ -135,7 +165,13 @@ public static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
         }
     }
     
-    //TODO Add all api calls you need, here are some exaples from other projects:
+    //FIXME Add all api calls you need, here are some exaples from other projects
+    /**
+     * 
+     * @author Valentino milanov
+     * 
+     * Enum with all API calls that are used on the project
+     */
     public enum ApiCall {
         LOGIN("/nuxeo/site/automation-ext/login"),
         LOGOUT("/nuxeo/site/automation-ext/logout"),
@@ -150,7 +186,15 @@ public static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
         
         CREATE_WORKFLOW("/nuxeo/site/project/workflow?start=true"),
         
+        CREATE_BOOKMARK("/nuxeo/site/automation-ext/Mobile.CreateBookmark"),
+        
         WORKFLOW_SUMMARY("/nuxeo/site/project/workflow/summary?archiveId=%s&excludeActivities=true&includeHistory=true"),
+        
+        UPDATE_MODULE("/nuxeo/site/automation-ext/Mobile.UpdateModule"),
+        
+        CREATE_STUDY("/nuxeo/site/automation-ext/Mobile.CreateStudy"),
+        
+        GET_WORKFLOWS("/nuxeo/site/dms/workflow?excludeActivities=true&historyOnly=false&includeHistory=true&processType=REVIEW_NETWORK_PROFILE,QUALIFY_CONTACT_FOR_SIGNING"),
         
         ;
         
@@ -166,6 +210,13 @@ public static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
         
     }
     
+ 
+    /**
+     * 
+     * @author Valentino Milanov
+     *
+     * This enum is for HTTP request methods that are used in the project
+     */
     public enum Method {
         
         GET("GET", 200),
@@ -192,6 +243,11 @@ public static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
         
     }
 
+    /**
+     * This method is showing the API call that was executed
+     * @param apiCall	API call URL
+     * @param entity	HTTP request or response entity, consisting of headers and body.
+     */
     protected void apiLog(ApiCall apiCall, HttpEntity entity) {
         String responseString = null;
         try {
