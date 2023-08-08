@@ -65,6 +65,12 @@
             <artifactId>opencv</artifactId>
             <version>2.4.9-7</version>
         </dependency>
+        
+        <dependency>
+    		<groupId>org.openpnp</groupId>
+    		<artifactId>opencv</artifactId>
+    		<version>3.2.0-0</version>
+		</dependency>
 		
 		
 	<!-- International Components for Unicode (ICU) -->

@@ -1,1 +1,70 @@
-/.metadata/
+# Directories #
+/build/
+/bin/
+target/
+test-output
+out
+wedoqa.properties
+logs/
+screenshots
+
+######################
+# Eclipse
+######################
+
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# OS Files #
+.DS_Store
+
+*.class
+
+# Package Files #
+*.war
+*.ear
+*.db
+#####################
+## intellij IDEA
+#####################
+
+.idea
+*.iml
+*.ipr
+
+#####################
+# Windows
+######################
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+######################
+# OSX
+######################
+
+.DS_Store
+.svn
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+*.log

@@ -1,8 +1,6 @@
 package com.project.test.util.junit;
 
-import com.project.test.util.OperationSystem;
 import com.project.test.util.TestMode;
-import com.project.testrail.enums.TestRailProjects;
 
 public class TestBaseStaticConfig {
 	
@@ -110,7 +108,6 @@ public class TestBaseStaticConfig {
         logger.info("Retry set to: " + retry);
         logger.info("TestRail set to: " + testrail);
         logger.info("Documentation set to: " + documentation);
-        logger.info("TestRail Project set to: " + testRailProject);
         
         MDC.remove("methodName");
     }
@@ -502,5 +499,4 @@ public class TestBaseStaticConfig {
     public void setTestCaseId(int testCaseId) {
         this.testCaseId = testCaseId;
     }
-
 }
